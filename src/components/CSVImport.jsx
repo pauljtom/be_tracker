@@ -74,7 +74,7 @@ export default function CSVImport({ onImport }) {
             style={{ boxShadow: '0 32px 96px rgba(0,0,0,.7)' }}
           >
             {/* Header */}
-            <div className="px-6 py-5 border-b border-n-bdr flex-none">
+            <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-n-bdr flex-none">
               <p className="text-[15px] font-bold mb-3">
                 Import Preview —{' '}
                 <span className="font-mono text-n-grn">{preview.length}</span> rows
@@ -97,16 +97,19 @@ export default function CSVImport({ onImport }) {
             </div>
 
             {/* Scrollable table */}
-            <div className="overflow-y-auto flex-1">
+            <div className="overflow-y-auto overflow-x-auto flex-1">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 bg-n-card">
                   <tr className="border-b border-n-bdr">
-                    {['Date', 'Description', 'Category', 'Amount'].map(h => (
+                    {[
+                      { h: 'Date',        cls: 'text-left' },
+                      { h: 'Description', cls: 'text-left' },
+                      { h: 'Category',    cls: 'text-left hidden sm:table-cell' },
+                      { h: 'Amount',      cls: 'text-right' },
+                    ].map(({ h, cls }) => (
                       <th
                         key={h}
-                        className={`px-4 py-2.5 text-[10px] font-bold tracking-[.12em] uppercase text-n-muted ${
-                          h === 'Amount' ? 'text-right' : 'text-left'
-                        }`}
+                        className={`px-2 py-2 sm:px-4 sm:py-2.5 text-[10px] font-bold tracking-[.12em] uppercase text-n-muted ${cls}`}
                       >
                         {h}
                       </th>
@@ -118,19 +121,16 @@ export default function CSVImport({ onImport }) {
                     const c = getCat(row.category)
                     return (
                       <tr key={row.id} className="border-b border-n-bdr/40 hover:bg-n-card2">
-                        <td className="px-4 py-2.5">
-                          <span className="font-mono text-[11px] text-n-sub">{row.date}</span>
+                        <td className="px-2 py-2 sm:px-4 sm:py-2.5">
+                          <span className="font-mono text-[11px] text-n-sub whitespace-nowrap">{row.date}</span>
                         </td>
-                        <td
-                          className="px-4 py-2.5 text-sm text-n-tx"
-                          style={{ maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-                        >
+                        <td className="px-2 py-2 sm:px-4 sm:py-2.5 text-sm text-n-tx max-w-[140px] sm:max-w-[220px] truncate">
                           {row.description}
                         </td>
-                        <td className="px-4 py-2.5 text-sm text-n-sub whitespace-nowrap">
+                        <td className="px-2 py-2 sm:px-4 sm:py-2.5 text-sm text-n-sub whitespace-nowrap hidden sm:table-cell">
                           {c.icon} {c.label}
                         </td>
-                        <td className="px-4 py-2.5 text-right whitespace-nowrap">
+                        <td className="px-2 py-2 sm:px-4 sm:py-2.5 text-right whitespace-nowrap">
                           <span className={`font-mono text-sm font-medium ${
                             row.type === 'income' ? 'text-n-grn' : 'text-n-red'
                           }`}>
@@ -148,7 +148,7 @@ export default function CSVImport({ onImport }) {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-n-bdr flex-none flex justify-end gap-3">
+            <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-n-bdr flex-none flex justify-end gap-3">
               <button className="btn-g" onClick={() => setPreview(null)}>Cancel</button>
               <button className="btn-p" onClick={confirm}>
                 Import {preview.length} transactions

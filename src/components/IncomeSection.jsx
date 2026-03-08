@@ -55,7 +55,7 @@ export default function IncomeSection({ salary, onSave }) {
         <div className="flex items-baseline gap-3 flex-wrap">
           <span
             className="font-mono font-semibold text-n-grn fade-up sens"
-            style={{ fontSize: 38, letterSpacing: '-.025em', lineHeight: 1 }}
+            style={{ fontSize: 'clamp(24px, 7vw, 38px)', letterSpacing: '-.025em', lineHeight: 1 }}
           >
             {fmt(salary)}
           </span>

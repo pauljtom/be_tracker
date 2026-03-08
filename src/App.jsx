@@ -53,7 +53,7 @@ export default function App() {
     <div className={`max-w-[920px] mx-auto px-4 py-8 pb-20 flex flex-col gap-4${privacy ? ' privacy' : ''}`}>
 
       {/* ── Header ── */}
-      <div className="flex items-start justify-between mb-2">
+      <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
         <div>
           <h1 className="text-[26px] font-extrabold tracking-[-0.03em] leading-tight">
             Budget<br />

@@ -11,17 +11,17 @@ export default function OverviewBar({ salary, transactions }) {
 
   return (
     <div className="card">
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-2 mb-6">
         {[
           { label: 'Spent',   val: fmt(spent),           cls: 'text-n-red' },
           { label: 'Balance', val: fmt(balance),          cls: balCls },
           { label: '% Used',  val: `${pct.toFixed(1)}%`, cls: pctCls },
         ].map(({ label, val, cls }) => (
-          <div key={label} className="text-center">
+          <div key={label} className="text-center min-w-0">
             <p className="lbl mb-2">{label}</p>
             <p
-              className={`font-mono font-semibold fade-up sens ${cls}`}
-              style={{ fontSize: 22, letterSpacing: '-.02em', lineHeight: 1 }}
+              className={`font-mono font-semibold fade-up sens truncate ${cls}`}
+              style={{ fontSize: 'clamp(12px, 3.8vw, 22px)', letterSpacing: '-.02em', lineHeight: 1 }}
             >
               {val}
             </p>
@@ -41,15 +41,16 @@ export default function OverviewBar({ salary, transactions }) {
         )}
       </div>
 
-      <div className="flex mt-2">
+      <div className="flex flex-wrap justify-between items-center gap-1 mt-2">
         {salary === 0 ? (
           <span className="text-[11px] text-n-muted">
             Set your monthly income above to track budget usage
           </span>
         ) : (
-          <span className="font-mono text-[10px] text-n-muted ml-auto sens">
-            {fmt(spent)} of {fmt(salary)} spent
-          </span>
+          <>
+            <span className="font-mono text-[10px] text-n-muted sens">{fmt(spent)} spent</span>
+            <span className="font-mono text-[10px] text-n-muted sens">{fmt(salary - spent)} left</span>
+          </>
         )}
       </div>
     </div>

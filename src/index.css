@@ -102,13 +102,15 @@
   .pill.on { background: #34d399; color: #05160d; @apply border-n-grn; }
   .pill:not(.on):hover { @apply border-n-bdr2 text-n-tx; }
 
-  /* ── Card hover lift ─────────────────────────────────────────────── */
+  /* ── Card hover lift (pointer devices only) ─────────────────────── */
   .card {
     transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.35);
+    }
   }
 
   /* ── Smooth collapse (grid-rows trick) ───────────────────────────── */
