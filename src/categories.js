@@ -9,6 +9,9 @@ export const CATEGORIES = [
   { id: 'savings',       label: 'Savings',       icon: '💰', color: '#34d399' },
   { id: 'shopping',      label: 'Shopping',      icon: '🛍️', color: '#f97316' },
   { id: 'income',        label: 'Income',        icon: '💵', color: '#4ade80' },
+  { id: 'subscriptions', label: 'Subscriptions',  icon: '🔄', color: '#818cf8' },
+  { id: 'car_payments',  label: 'Car Payments',   icon: '🚘', color: '#38bdf8' },
+  { id: 'mom',           label: 'Mom',            icon: '👩', color: '#f472b6' },
   { id: 'other',         label: 'Other',         icon: '📦', color: '#6b7280' },
 ]
 
@@ -24,12 +27,14 @@ const RULES = [
   { patterns: ['restaurant', 'food & drink', 'groceries', 'coffee', 'cafe', 'bakery', 'takeaway', 'fast food', 'checkers', 'woolworths food', 'pick n pay', 'spar', 'shoprite'], cat: 'food' },
   { patterns: ['uber', 'taxi', 'parking', 'toll', 'ride', 'bus', 'train', 'metro', 'lyft'], cat: 'transport' },
   { patterns: ['fuel & gas', 'petrol', 'filling station', 'petrol station', 'garage', ' bp ', 'bp petrol', 'shell', 'engen', 'caltex', 'sasol', 'total garage', 'astron'], cat: 'petrol' },
-  { patterns: ['phone & internet', 'electricity', 'water', 'internet', 'airtime', 'data', 'dstv', 'netflix', 'streaming'], cat: 'utilities' },
+  { patterns: ['phone & internet', 'electricity', 'water', 'internet', 'airtime', 'data'], cat: 'utilities' },
+  { patterns: ['dstv', 'netflix', 'spotify', 'streaming', 'subscription', 'amazon prime', 'disney', 'apple music', 'youtube premium'], cat: 'subscriptions' },
   { patterns: ['medical', 'pharmacy', 'wellness', 'hospital', 'doctor', 'dentist', 'optom', 'health', 'clicks', 'dis-chem', 'dischem'], cat: 'health' },
   { patterns: ['movies & tv', 'sport', 'recreation', 'gym', 'cinema', 'concert', 'spotify', 'gaming'], cat: 'entertainment' },
   { patterns: ['clothing', 'retail', 'fashion', 'apparel', 'shoes', 'woolworths', 'mr price', 'edgars', 'truworths', 'h&m', 'zara'], cat: 'shopping' },
   { patterns: ['rent', 'mortgage', 'levy', 'bond', 'home'], cat: 'housing' },
   { patterns: ['savings & investments', 'savings', 'investment', 'unit trust'], cat: 'savings' },
+  { patterns: ['toyota', 'car payment', 'vehicle finance', 'auto finance', 'wesbank', 'absa vehicle', 'std bank vehicle', 'nedbank vehicle', 'bmw financial', 'mercedes finance', 'vw finance'], cat: 'car_payments' },
   { patterns: ['salary', 'wages', 'wage', 'payroll'], cat: 'income' },
 ]
 

@@ -102,10 +102,38 @@
   .pill.on { background: #34d399; color: #05160d; @apply border-n-grn; }
   .pill:not(.on):hover { @apply border-n-bdr2 text-n-tx; }
 
+  /* ── Card hover lift ─────────────────────────────────────────────── */
+  .card {
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+  }
+
+  /* ── Smooth collapse (grid-rows trick) ───────────────────────────── */
+  .collapsible {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .collapsible.open {
+    grid-template-rows: 1fr;
+  }
+  .collapsible > * { overflow: hidden; }
+
+  /* ── Chevron ─────────────────────────────────────────────────────── */
+  .chevron {
+    @apply inline-block text-n-muted transition-transform duration-300;
+    font-size: 9px;
+  }
+  .chevron.open { transform: rotate(180deg); }
+
   /* ── Transaction row ─────────────────────────────────────────────── */
   .tx-row {
     @apply rounded-[12px] px-3 py-[11px] transition-colors duration-100
            flex items-center gap-3 cursor-default;
+    animation: itemIn 0.22s ease-out both;
   }
   .tx-row:hover { @apply bg-n-card2; }
   .tx-row .acts { @apply opacity-0 transition-opacity duration-150; }
@@ -129,6 +157,15 @@
   .prog-anim { animation: progIn   0.90s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   .dot-pulse { animation: dotPulse 2.40s ease-in-out infinite; }
 
+  /* Staggered section entrance */
+  .enter      { animation: cardEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .enter-1    { animation-delay: 0.05s; }
+  .enter-2    { animation-delay: 0.10s; }
+  .enter-3    { animation-delay: 0.16s; }
+  .enter-4    { animation-delay: 0.22s; }
+  .enter-5    { animation-delay: 0.28s; }
+  .enter-6    { animation-delay: 0.34s; }
+
   /* Privacy / obfuscate mode */
   .sens {
     transition: filter 0.25s ease, opacity 0.25s ease;
@@ -144,6 +181,14 @@
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes itemIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 @keyframes barIn  { from { width: 0; } }
 @keyframes progIn { from { width: 0; } }

@@ -72,12 +72,12 @@ export default function TransactionList({ transactions, onEdit, onDelete, catego
         onClick={() => toggle(id)}
       >
         <div className="flex items-center gap-2">
-          <span className={`font-bold tracking-[.1em] uppercase text-n-muted ${indent ? 'text-[10px]' : 'text-[10px]'}`}>{label}</span>
+          <span className="text-[10px] font-bold tracking-[.1em] uppercase text-n-muted">{label}</span>
           <span className="font-mono text-[10px] bg-n-card2 rounded-md px-1.5 py-0.5 text-n-sub">{count}</span>
         </div>
         <div className="flex items-center gap-2.5">
           <span className={`font-mono text-[11px] font-semibold sens ${colorClass}`}>{total}</span>
-          <span className="text-n-muted text-[10px]">{expanded ? '▲' : '▼'}</span>
+          <span className={`chevron${expanded ? ' open' : ''}`}>▼</span>
         </div>
       </button>
     )
@@ -106,11 +106,11 @@ export default function TransactionList({ transactions, onEdit, onDelete, catego
               total={`+${fmt(totalInc)}`}
               colorClass="text-n-grn"
             />
-            {!!open['income'] && (
+            <div className={`collapsible${open['income'] ? ' open' : ''}`}>
               <div className="flex flex-col gap-0.5 mt-1">
                 {incomes.map(tx => <TxRow key={tx.id} tx={tx} />)}
               </div>
-            )}
+            </div>
           </div>
         )}
 
@@ -124,7 +124,7 @@ export default function TransactionList({ transactions, onEdit, onDelete, catego
               total={`−${fmt(totalExp)}`}
               colorClass="text-n-red"
             />
-            {expExpanded && (
+            <div className={`collapsible${expExpanded ? ' open' : ''}`}>
               <div className="flex flex-col gap-1 mt-1 pl-3 border-l border-n-bdr">
                 {expCatGroups.map(({ cat, rows }) => {
                   const catTotal = rows.reduce((s, t) => s + t.amount, 0)
@@ -139,16 +139,16 @@ export default function TransactionList({ transactions, onEdit, onDelete, catego
                         colorClass="text-n-red"
                         indent
                       />
-                      {!!open[catKey] && (
+                      <div className={`collapsible${open[catKey] ? ' open' : ''}`}>
                         <div className="flex flex-col gap-0.5 mt-1">
                           {rows.map(tx => <TxRow key={tx.id} tx={tx} />)}
                         </div>
-                      )}
+                      </div>
                     </div>
                   )
                 })}
               </div>
-            )}
+            </div>
           </div>
         )}
       </div>

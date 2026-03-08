@@ -83,11 +83,24 @@ export default function App() {
         </div>
       </div>
 
-      <IncomeSection salary={salary} onSave={saveSalary} />
+      {/* ── 1. Context: what you have ── */}
+      <div className="enter enter-1"><IncomeSection salary={salary} onSave={saveSalary} /></div>
+      <div className="enter enter-2"><OverviewBar salary={salary} transactions={transactions} /></div>
 
-      <OverviewBar salary={salary} transactions={transactions} />
+      {/* ── 2. Plan + Analyse: side by side ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 enter enter-3">
+        <BudgetSection
+          budgets={budgets}
+          onAdd={addBudget}
+          onDelete={deleteBudget}
+          salary={salary}
+          spent={transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)}
+        />
+        <CategoryBreakdown transactions={transactions} categories={allExpCats} />
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* ── 3. Input: add manually ── */}
+      <div className="enter enter-4">
         <ExpenseForm
           onAdd={addOrUpdate}
           editTx={editTx}
@@ -96,25 +109,22 @@ export default function App() {
           categories={allExpCats}
           onAddCategory={addCustomCat}
         />
-        <div className="flex flex-col gap-4">
-          <CSVImport onImport={rows => importTransactions(rows, salary)} />
-          <BudgetSection
-                  budgets={budgets}
-                  onAdd={addBudget}
-                  onDelete={deleteBudget}
-                  salary={salary}
-                  spent={transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)}
-                />
-          <CategoryBreakdown transactions={transactions} categories={allExpCats} />
-        </div>
       </div>
 
-      <TransactionList
-        transactions={transactions}
-        onEdit={startEdit}
-        onDelete={deleteTransaction}
-        categories={allCats}
-      />
+      {/* ── 4. History ── */}
+      <div className="enter enter-5">
+        <TransactionList
+          transactions={transactions}
+          onEdit={startEdit}
+          onDelete={deleteTransaction}
+          categories={allCats}
+        />
+      </div>
+
+      {/* ── 5. Import ── */}
+      <div className="enter enter-6">
+        <CSVImport onImport={rows => importTransactions(rows, salary)} />
+      </div>
     </div>
   )
 }

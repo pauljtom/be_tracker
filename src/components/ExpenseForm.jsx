@@ -13,6 +13,7 @@ const EMOJI_GRID = [
 ]
 
 export default function ExpenseForm({ onAdd, editTx, onCancel, formRef, categories = [], onAddCategory }) {
+  const [open, setOpen] = useState(false)
   const [type, setType] = useState('expense')
   const [desc, setDesc] = useState('')
   const [amt,  setAmt]  = useState('')
@@ -30,6 +31,7 @@ export default function ExpenseForm({ onAdd, editTx, onCancel, formRef, categori
       setDesc(editTx.description)
       setAmt(String(editTx.amount))
       setCat(editTx.category)
+      setOpen(true)
     } else {
       setType('expense'); setDesc(''); setAmt(''); setCat('food')
     }
@@ -63,12 +65,19 @@ export default function ExpenseForm({ onAdd, editTx, onCancel, formRef, categori
 
   return (
     <div className="card" ref={formRef}>
-      <p className="lbl mb-3.5">
-        {editTx ? '✏️  Edit Transaction' : 'Add Transaction'}
-      </p>
+      <button
+        className="w-full flex items-center justify-between hover:opacity-80 transition-opacity mb-0"
+        onClick={() => setOpen(o => !o)}
+      >
+        <p className="lbl">
+          {editTx ? '✏️  Edit Transaction' : 'Add Transaction'}
+        </p>
+        <span className={`chevron${open ? ' open' : ''}`}>▼</span>
+      </button>
 
+      <div className={`collapsible${open ? ' open' : ''}`}><div>
       {/* Type selector */}
-      <div className="flex gap-2 mb-3.5">
+      <div className="flex gap-2 mb-3.5 mt-3.5">
         <button
           className={`type-tab exp${type === 'expense' ? ' on' : ''}`}
           onClick={() => setType('expense')}
@@ -186,6 +195,7 @@ export default function ExpenseForm({ onAdd, editTx, onCancel, formRef, categori
           )}
         </div>
       </div>
+      </div></div>
     </div>
   )
 }

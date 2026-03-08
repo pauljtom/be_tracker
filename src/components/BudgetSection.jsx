@@ -28,11 +28,11 @@ export default function BudgetSection({ budgets, onAdd, onDelete, salary = 0, sp
   }, [])
 
   return (
-    <div className="card">
+    <div className="card h-full">
       <p className="lbl mb-4">Budget</p>
 
       {/* Add form */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <input
           className="field flex-1"
           placeholder="Name"
@@ -40,62 +40,38 @@ export default function BudgetSection({ budgets, onAdd, onDelete, salary = 0, sp
           onChange={e => setName(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && add()}
         />
-        <div className="relative" style={{ minWidth: 120 }}>
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-sm text-n-sub pointer-events-none">
-            R
-          </span>
-          <input
-            className="field font-mono pl-7"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="0.00"
-            value={amount}
-            onChange={e => setAmount(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && add()}
-          />
+        <div className="flex gap-2">
+          <div className="relative flex-1 sm:flex-none" style={{ minWidth: 110 }}>
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-sm text-n-sub pointer-events-none">
+              R
+            </span>
+            <input
+              className="field font-mono pl-7 w-full"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              value={amount}
+              onChange={e => setAmount(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && add()}
+            />
+          </div>
+          <button className="btn-p flex-shrink-0" onClick={add}>Add</button>
         </div>
-        <button className="btn-p" onClick={add}>Add</button>
       </div>
-
-      {/* Budget items */}
-      {budgets.length === 0 ? (
-        <p className="text-xs text-n-muted text-center py-4">No budget allocations yet</p>
-      ) : (
-        <div className="flex flex-col gap-0.5 mb-4">
-          {itemsWithBalance.map(b => (
-            <div key={b.id} className="tx-row">
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold text-n-tx truncate">{b.name}</p>
-              </div>
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <span className="font-mono text-sm font-semibold text-n-sub sens">
-                  −{fmt(b.amount)}
-                </span>
-                <span className={`font-mono text-sm font-semibold sens ${b.runningBalance >= 0 ? 'text-n-grn' : 'text-n-red'}`}>
-                  {fmt(b.runningBalance)}
-                </span>
-              </div>
-              <div className="acts flex-shrink-0">
-                <button className="btn-del" onClick={() => onDelete(b.id)} title="Delete">🗑️</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Balance preview */}
       {(salary > 0 || spent > 0 || total > 0) && (
-        <div className="border-t border-n-bdr pt-4 mt-2">
+        <div className="mb-4">
           <div className="grid grid-cols-3 gap-3 mb-4">
             {[
               { label: 'Balance',   val: fmt(currentBalance), cls: currentBalance >= 0 ? 'text-n-grn' : 'text-n-red' },
               { label: 'Allocated', val: fmt(total),          cls: 'text-n-sub' },
               { label: 'Remaining', val: fmt(remaining),      cls: remCls },
             ].map(({ label, val, cls }) => (
-              <div key={label} className="text-center">
+              <div key={label} className="text-center min-w-0">
                 <p className="lbl mb-1.5">{label}</p>
-                <p className={`font-mono font-semibold sens ${cls}`} style={{ fontSize: 15, letterSpacing: '-.02em' }}>
+                <p className={`font-mono font-semibold sens truncate ${cls}`} style={{ fontSize: 'clamp(11px, 2.8vw, 15px)', letterSpacing: '-.02em' }}>
                   {val}
                 </p>
               </div>
@@ -113,6 +89,33 @@ export default function BudgetSection({ budgets, onAdd, onDelete, salary = 0, sp
           <p className="font-mono text-[10px] text-n-muted mt-1.5 text-right sens">
             {pct.toFixed(1)}% of income allocated
           </p>
+        </div>
+      )}
+
+      {/* Budget items */}
+      {budgets.length === 0 ? (
+        <p className="text-xs text-n-muted text-center py-4">No budget allocations yet</p>
+      ) : (
+        <div className="flex flex-col gap-0.5">
+          {itemsWithBalance.map(b => (
+            <div key={b.id} className="rounded-[12px] px-3 py-[10px] hover:bg-n-card2 transition-colors group">
+              <div className="flex items-center gap-2 min-w-0">
+                <p className="text-[13px] font-semibold text-n-tx truncate flex-1">{b.name}</p>
+                <button
+                  className="btn-del flex-shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                  onClick={() => onDelete(b.id)}
+                  title="Delete"
+                >🗑️</button>
+              </div>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="font-mono text-[11px] text-n-sub sens">−{fmt(b.amount)}</span>
+                <span className="text-n-muted text-[10px]">→</span>
+                <span className={`font-mono text-[11px] font-semibold sens ${b.runningBalance >= 0 ? 'text-n-grn' : 'text-n-red'}`}>
+                  {fmt(b.runningBalance)}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

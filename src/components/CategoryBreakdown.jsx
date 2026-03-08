@@ -21,7 +21,7 @@ export default function CategoryBreakdown({ transactions, categories = [] }) {
       amt:   expenses.filter(t => t.category === c.id).reduce((s, t) => s + t.amount, 0),
       items: expenses
         .filter(t => t.category === c.id)
-        .sort((a, b) => dateVal(b.date) - dateVal(a.date)),
+        .sort((a, b) => b.amount - a.amount),
     }))
     .filter(c => c.amt > 0)
     .sort((a, b) => b.amt - a.amt)
@@ -44,9 +44,7 @@ export default function CategoryBreakdown({ transactions, categories = [] }) {
                 <div className="flex justify-between items-baseline mb-1.5">
                   <span className="flex items-center gap-1.5 text-xs text-n-sub group-hover:text-n-tx transition-colors">
                     {c.icon} {c.label}
-                    <span className="text-n-muted text-[10px] group-hover:text-n-sub transition-colors">
-                      {isOpen ? '▲' : '▼'}
-                    </span>
+                    <span className={`chevron${isOpen ? ' open' : ''} group-hover:text-n-sub`}>▼</span>
                   </span>
                   <span className="font-mono text-xs text-n-tx sens">
                     {fmt(c.amt)}{' '}
@@ -65,7 +63,7 @@ export default function CategoryBreakdown({ transactions, categories = [] }) {
               </button>
 
               {/* ── Expanded items ── */}
-              {isOpen && (
+              <div className={`collapsible${isOpen ? ' open' : ''}`}>
                 <div className="mt-0.5 mb-1.5 ml-3 border-l-2 pl-3" style={{ borderColor: `${c.color}60` }}>
                   {c.items.map(tx => (
                     <div key={tx.id} className="flex items-center justify-between py-1.5">
@@ -79,7 +77,7 @@ export default function CategoryBreakdown({ transactions, categories = [] }) {
                     </div>
                   ))}
                 </div>
-              )}
+              </div>
             </div>
           )
         })}
