@@ -5,6 +5,7 @@ import OverviewBar       from './components/OverviewBar'
 import ExpenseForm       from './components/ExpenseForm'
 import CSVImport         from './components/CSVImport'
 import CategoryBreakdown from './components/CategoryBreakdown'
+import BudgetSection     from './components/BudgetSection'
 import TransactionList   from './components/TransactionList'
 import { EXP_CATS, CATEGORIES } from './categories'
 
@@ -13,6 +14,7 @@ export default function App() {
     ready,
     salary, saveSalary,
     transactions, addTransaction, updateTransaction, deleteTransaction, importTransactions,
+    budgets, addBudget, deleteBudget,
     customCats, addCustomCat,
   } = useDb()
 
@@ -96,6 +98,13 @@ export default function App() {
         />
         <div className="flex flex-col gap-4">
           <CSVImport onImport={rows => importTransactions(rows, salary)} />
+          <BudgetSection
+                  budgets={budgets}
+                  onAdd={addBudget}
+                  onDelete={deleteBudget}
+                  salary={salary}
+                  spent={transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)}
+                />
           <CategoryBreakdown transactions={transactions} categories={allExpCats} />
         </div>
       </div>

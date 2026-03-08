@@ -12,6 +12,7 @@ export function useDb() {
   const [salary,       setSalaryState]  = useState(0)
   const [transactions, setTransactions] = useState([])
   const [customCats,   setCustomCats]   = useState([])
+  const [budgets,      setBudgets]      = useState([])
 
   useEffect(() => {
     DB.initDb()
@@ -19,6 +20,7 @@ export function useDb() {
         setSalaryState(DB.getSalary())
         setTransactions(DB.getTransactions())
         setCustomCats(DB.getCustomCats())
+        setBudgets(DB.getBudgets())
         setReady(true)
       })
       .catch(err => console.error('DB init failed:', err))
@@ -57,6 +59,16 @@ export function useDb() {
     }
   }, [])
 
+  const addBudget = useCallback(b => {
+    DB.insertBudget(b)
+    setBudgets(prev => [...prev, b])
+  }, [])
+
+  const deleteBudget = useCallback(id => {
+    DB.deleteBudget(id)
+    setBudgets(prev => prev.filter(b => b.id !== id))
+  }, [])
+
   const addCustomCat = useCallback(({ label, icon }) => {
     const color = CAT_PALETTE[DB.getCustomCats().length % CAT_PALETTE.length]
     const cat   = { id: `custom_${Date.now()}`, label, icon, color }
@@ -69,6 +81,7 @@ export function useDb() {
     ready,
     salary, saveSalary,
     transactions, addTransaction, updateTransaction, deleteTransaction, importTransactions,
+    budgets, addBudget, deleteBudget,
     customCats, addCustomCat,
   }
 }

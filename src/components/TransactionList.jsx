@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { fmt, dateVal } from '../utils'
 
 const FALLBACK = { id: 'other', label: 'Other', icon: '📦', color: '#6b7280' }
@@ -5,6 +6,11 @@ const FALLBACK = { id: 'other', label: 'Other', icon: '📦', color: '#6b7280' }
 export default function TransactionList({ transactions, onEdit, onDelete, categories = [] }) {
   const catMap = Object.fromEntries(categories.map(c => [c.id, c]))
   const sorted = [...transactions].sort((a, b) => dateVal(b.date) - dateVal(a.date))
+  const [open, setOpen] = useState({})
+
+  function toggle(id) {
+    setOpen(prev => ({ ...prev, [id]: !prev[id] }))
+  }
 
   if (sorted.length === 0) return (
     <div className="card text-center py-12">
@@ -14,68 +20,137 @@ export default function TransactionList({ transactions, onEdit, onDelete, catego
     </div>
   )
 
-  const totalExp = sorted.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-  const totalInc = sorted.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+  const expenses = sorted.filter(t => t.type === 'expense')
+  const incomes  = sorted.filter(t => t.type === 'income')
+  const totalExp = expenses.reduce((s, t) => s + t.amount, 0)
+  const totalInc = incomes.reduce((s, t) => s + t.amount, 0)
+
+  function TxRow({ tx }) {
+    const c = catMap[tx.category] ?? FALLBACK
+    return (
+      <div className="tx-row">
+        <div className="text-xl w-9 text-center flex-shrink-0 select-none leading-none">
+          {c.icon}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[13px] font-semibold text-n-tx truncate sens">{tx.description}</p>
+          <p className="text-[11px] text-n-muted mt-0.5">
+            {c.label} · <span className="font-mono">{tx.date}</span>
+          </p>
+        </div>
+        <span
+          className={`font-mono text-sm font-semibold flex-shrink-0 sens ${
+            tx.type === 'income' ? 'text-n-grn' : 'text-n-red'
+          }`}
+          style={{ letterSpacing: '-.01em' }}
+        >
+          {tx.type === 'income' ? '+' : '−'}{fmt(tx.amount)}
+        </span>
+        <div className="acts flex gap-1.5 flex-shrink-0">
+          <button className="btn-g btn-sm" onClick={() => onEdit(tx)} title="Edit">✏️</button>
+          <button className="btn-del" onClick={() => onDelete(tx.id)} title="Delete">🗑️</button>
+        </div>
+      </div>
+    )
+  }
+
+  // Group expenses by category, sorted alphabetically by label
+  const expByCat = expenses.reduce((acc, tx) => {
+    const key = tx.category || 'other'
+    ;(acc[key] ??= []).push(tx)
+    return acc
+  }, {})
+  const expCatGroups = Object.entries(expByCat)
+    .map(([catId, rows]) => ({ cat: catMap[catId] ?? FALLBACK, rows }))
+    .sort((a, b) => a.cat.label.localeCompare(b.cat.label))
+
+  function CollapseHeader({ id, label, count, total, colorClass, indent = false }) {
+    const expanded = !!open[id]
+    return (
+      <button
+        className={`w-full flex items-center justify-between py-1.5 rounded-[8px] hover:bg-n-card2 transition-colors duration-100 ${indent ? 'px-3' : 'px-1'}`}
+        onClick={() => toggle(id)}
+      >
+        <div className="flex items-center gap-2">
+          <span className={`font-bold tracking-[.1em] uppercase text-n-muted ${indent ? 'text-[10px]' : 'text-[10px]'}`}>{label}</span>
+          <span className="font-mono text-[10px] bg-n-card2 rounded-md px-1.5 py-0.5 text-n-sub">{count}</span>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <span className={`font-mono text-[11px] font-semibold sens ${colorClass}`}>{total}</span>
+          <span className="text-n-muted text-[10px]">{expanded ? '▲' : '▼'}</span>
+        </div>
+      </button>
+    )
+  }
+
+  const expExpanded = !!open['expenses']
 
   return (
     <div className="card">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <div className="flex items-center gap-2.5">
-          <p className="lbl">Transactions</p>
-          <span className="font-mono text-[10px] bg-n-card2 rounded-md px-2 py-0.5 text-n-sub">
-            {sorted.length}
-          </span>
-        </div>
-        <div className="flex gap-4">
-          {totalInc > 0 && (
-            <span className="font-mono text-[11px] text-n-grn sens">+{fmt(totalInc)}</span>
-          )}
-          {totalExp > 0 && (
-            <span className="font-mono text-[11px] text-n-red sens">−{fmt(totalExp)}</span>
-          )}
-        </div>
+      <div className="flex items-center gap-2.5 mb-4">
+        <p className="lbl">Transactions</p>
+        <span className="font-mono text-[10px] bg-n-card2 rounded-md px-2 py-0.5 text-n-sub">
+          {sorted.length}
+        </span>
       </div>
 
-      {/* Rows */}
-      <div className="flex flex-col gap-0.5">
-        {sorted.map(tx => {
-          const c = catMap[tx.category] ?? FALLBACK
-          return (
-            <div key={tx.id} className="tx-row">
-              {/* Category icon */}
-              <div className="text-xl w-9 text-center flex-shrink-0 select-none leading-none">
-                {c.icon}
+      <div className="flex flex-col gap-2">
+        {/* Income */}
+        {incomes.length > 0 && (
+          <div>
+            <CollapseHeader
+              id="income"
+              label="Income"
+              count={incomes.length}
+              total={`+${fmt(totalInc)}`}
+              colorClass="text-n-grn"
+            />
+            {!!open['income'] && (
+              <div className="flex flex-col gap-0.5 mt-1">
+                {incomes.map(tx => <TxRow key={tx.id} tx={tx} />)}
               </div>
+            )}
+          </div>
+        )}
 
-              {/* Description + meta */}
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold text-n-tx truncate sens">
-                  {tx.description}
-                </p>
-                <p className="text-[11px] text-n-muted mt-0.5">
-                  {c.label} · <span className="font-mono">{tx.date}</span>
-                </p>
+        {/* Expenses */}
+        {expenses.length > 0 && (
+          <div>
+            <CollapseHeader
+              id="expenses"
+              label="Expenses"
+              count={expenses.length}
+              total={`−${fmt(totalExp)}`}
+              colorClass="text-n-red"
+            />
+            {expExpanded && (
+              <div className="flex flex-col gap-1 mt-1 pl-3 border-l border-n-bdr">
+                {expCatGroups.map(({ cat, rows }) => {
+                  const catTotal = rows.reduce((s, t) => s + t.amount, 0)
+                  const catKey   = `cat_${cat.id}`
+                  return (
+                    <div key={cat.id}>
+                      <CollapseHeader
+                        id={catKey}
+                        label={`${cat.icon} ${cat.label}`}
+                        count={rows.length}
+                        total={`−${fmt(catTotal)}`}
+                        colorClass="text-n-red"
+                        indent
+                      />
+                      {!!open[catKey] && (
+                        <div className="flex flex-col gap-0.5 mt-1">
+                          {rows.map(tx => <TxRow key={tx.id} tx={tx} />)}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
-
-              {/* Amount */}
-              <span
-                className={`font-mono text-sm font-semibold flex-shrink-0 sens ${
-                  tx.type === 'income' ? 'text-n-grn' : 'text-n-red'
-                }`}
-                style={{ letterSpacing: '-.01em' }}
-              >
-                {tx.type === 'income' ? '+' : '−'}{fmt(tx.amount)}
-              </span>
-
-              {/* Actions — revealed on row hover */}
-              <div className="acts flex gap-1.5 flex-shrink-0">
-                <button className="btn-g btn-sm" onClick={() => onEdit(tx)} title="Edit">✏️</button>
-                <button className="btn-del" onClick={() => onDelete(tx.id)} title="Delete">🗑️</button>
-              </div>
-            </div>
-          )
-        })}
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

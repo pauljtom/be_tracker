@@ -81,6 +81,13 @@ export async function initDb() {
       ord   INTEGER DEFAULT 0
     )
   `)
+  _db.run(`
+    CREATE TABLE IF NOT EXISTS budgets (
+      id     TEXT PRIMARY KEY,
+      name   TEXT NOT NULL,
+      amount REAL NOT NULL
+    )
+  `)
 }
 
 // ── Settings ──────────────────────────────────────────────────────
@@ -129,6 +136,23 @@ export function insertTransactions(txs) {
     stmt.run([tx.id, tx.description, tx.amount, tx.category, tx.date, tx.type])
   }
   stmt.free()
+  persist()
+}
+
+// ── Budgets ───────────────────────────────────────────────────────
+
+export function getBudgets() {
+  return rowsToObjs(_db.exec('SELECT * FROM budgets ORDER BY rowid'))
+    .map(b => ({ ...b, amount: Number(b.amount) }))
+}
+
+export function insertBudget(b) {
+  _db.run('INSERT INTO budgets VALUES (?,?,?)', [b.id, b.name, b.amount])
+  persist()
+}
+
+export function deleteBudget(id) {
+  _db.run('DELETE FROM budgets WHERE id = ?', [id])
   persist()
 }
 
